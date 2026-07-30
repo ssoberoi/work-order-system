@@ -1,0 +1,17 @@
+node_modules
+# Keep environment variables out of version control
+
+/src/generated/prisma
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
