@@ -21,6 +21,12 @@ enum WorkOrderStatus {
   CANCELLED
 }
 
+enum MachineStatus {
+  RUNNING
+  STOPPED
+  MAINTENANCE
+}
+
 enum WorkOrderPriority {
   LOW
   MEDIUM
@@ -33,6 +39,7 @@ model Machine {
   machineCode String @unique
   machineName String
   plant String
+  status MachineStatus @default(RUNNING)
   location String
 
   createdAt DateTime @default(now())

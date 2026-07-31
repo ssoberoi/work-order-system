@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import errorHandler from "./middlewares/error.middleware";
 
 const app = express();
 
@@ -13,5 +14,7 @@ app.get("/health", (req, res) => {
         message: "Server is running successfully"
     });
 });
+
+app.use(errorHandler);
 
 export default app;
