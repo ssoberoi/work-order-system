@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
-import errorHandler from "./middlewares/error.middleware";
+import errorHandler from "./middlewares/error.middleware.js";
+import machineRoutes from "./routes/machine.routes.js";
+
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.get("/health", (req, res) => {
         message: "Server is running successfully"
     });
 });
+
+app.use("/api/machines", machineRoutes);
 
 app.use(errorHandler);
 
