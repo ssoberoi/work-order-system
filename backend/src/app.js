@@ -4,6 +4,7 @@ import errorHandler from "./middlewares/error.middleware.js";
 import machineRoutes from "./routes/machine.routes.js";
 import engineerRoutes from "./routes/engineer.routes.js";
 import workOrderRoutes from "./routes/workOrder.routes.js"; 
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get("/health", (req, res) => {
 app.use("/api/machines", machineRoutes);
 app.use("/api/engineers", engineerRoutes);
 app.use("/api/work-orders", workOrderRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use(errorHandler);
 
