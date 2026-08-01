@@ -10,13 +10,26 @@ import {
 } from "../services/workorder.service.js";
 
 const createWorkOrder = asyncHandler(async (req, res) => {
-    const { workOrderNumber, title, description, priority, estimatedHours, scheduledDate, machineId, engineerId } = req.body;
+    const { workOrderNumber, title, description, priority, status, estimatedHours, scheduledDate, machineId, engineerId } = req.body;
+    const selectedDate = new Date(scheduledDate);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+        throw new ApiError(400, "Scheduled date cannot be in the past");
+    }
+
+    if (Number(estimatedHours) <= 0) {
+        throw new ApiError(400, "Estimated hours must be greater than 0");
+    }
 
     if (!workOrderNumber?.trim() ||
         !title?.trim() ||
         !description?.trim() ||
         !priority?.trim() ||
-        estimatedHours=== undefined||
+        estimatedHours === undefined ||
         !scheduledDate?.trim() ||
         !machineId ||
         !engineerId) {
@@ -28,6 +41,7 @@ const createWorkOrder = asyncHandler(async (req, res) => {
         title,
         description,
         priority,
+        status,
         estimatedHours: Number(estimatedHours),
         scheduledDate,
         machineId: Number(machineId),
@@ -43,13 +57,16 @@ const createWorkOrder = asyncHandler(async (req, res) => {
 
 const getAllWorkOrders = asyncHandler(async (req, res) => {
 
-    const { status, priority, machineId, engineerId } = req.query;
+    const { status, priority, machineId, engineerId, workOrderNumber, fromDate, toDate } = req.query;
 
     const workOrders = await getAllWorkOrdersService({
         status,
         priority,
         machineId: machineId ? Number(machineId) : undefined,
         engineerId: engineerId ? Number(engineerId) : undefined,
+        workOrderNumber,
+        fromDate,
+        toDate,
     });
 
     return res.status(200).json(
@@ -88,16 +105,31 @@ const updateWorkOrder = asyncHandler(async (req, res) => {
         title,
         description,
         priority,
+        status,
         estimatedHours,
         scheduledDate,
         machineId,
         engineerId
     } = req.body;
 
+    const selectedDate = new Date(scheduledDate);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+        throw new ApiError(400, "Scheduled date cannot be in the past");
+    }
+
+    if (Number(estimatedHours) <= 0) {
+        throw new ApiError(400, "Estimated hours must be greater than 0");
+    }
+
     if (!title?.trim() ||
         !description?.trim() ||
         !priority?.trim() ||
-        estimatedHours=== undefined||
+        estimatedHours === undefined ||
         !scheduledDate?.trim() ||
         !machineId ||
         !engineerId) {
@@ -108,6 +140,7 @@ const updateWorkOrder = asyncHandler(async (req, res) => {
         title,
         description,
         priority,
+        status,
         estimatedHours: Number(estimatedHours),
         scheduledDate,
         machineId: Number(machineId),
@@ -119,7 +152,7 @@ const updateWorkOrder = asyncHandler(async (req, res) => {
             200, updatedWorkOrder, "Work order updated successfully"
         )
     );
-}); 
+});
 
 const deleteWorkOrder = asyncHandler(async (req, res) => {
     const { id } = req.params;

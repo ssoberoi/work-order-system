@@ -40,7 +40,7 @@ const createMachine = asyncHandler(async (req, res) => {
 
 const getAllMachines = asyncHandler(async (req, res) => {
     const machines = await getAllMachinesService();
-
+   console.log(machines)
     return res.status(200).json(
         new ApiResponse(
             200, machines, "machines fetched successfully"

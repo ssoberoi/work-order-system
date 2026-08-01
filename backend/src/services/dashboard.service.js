@@ -41,6 +41,22 @@ const getDashboardSummary = async () => {
         }
     })
 
+    const today = new Date();
+    const startDay = new Date(today);
+    startDay.setHours(0, 0, 0, 0);
+
+    const endDay = new Date(today);
+    endDay.setHours(23, 59, 59, 999);
+
+    const todaysScheduledWorkOrders = await prisma.workOrder.count({
+        where: {
+            scheduledDate: {
+                gte: startDay,
+                lte: endDay,
+            }
+        }
+    });
+
     return {
         totalMachines,
         totalEngineers,
@@ -50,7 +66,8 @@ const getDashboardSummary = async () => {
         inProgressWorkOrders,
         completedWorkOrders,
         cancelledWorkOrders,
-        criticalWorkOrders
+        criticalWorkOrders,
+        todaysScheduledWorkOrders
     };
 };
 

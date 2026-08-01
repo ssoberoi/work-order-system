@@ -32,6 +32,7 @@ const getAllMachines = async () => {
             createdAt: "desc",
         },
     });
+    console.log(machines)
     return machines;
 };
 

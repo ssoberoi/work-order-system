@@ -8,6 +8,7 @@ const createWorkOrder = async (workOrderData) => {
         title,
         description,
         priority,
+        status,
         estimatedHours,
         scheduledDate,
         machineId,
@@ -49,6 +50,7 @@ const createWorkOrder = async (workOrderData) => {
             workOrderNumber,
             title,
             description,
+            status: status || "OPEN",
             priority,
             estimatedHours,
             scheduledDate: new Date(scheduledDate),
@@ -71,6 +73,9 @@ const {
     priority,
     engineerId,
     machineId,
+    workOrderNumber,
+    fromDate,
+    toDate,
 } = filters;
 
 const where = {};
@@ -89,6 +94,29 @@ if(engineerId) {
 
 if(machineId) {
     where.machineId = Number(machineId);
+}
+
+if(workOrderNumber){
+    where.workOrderNumber = {
+        contains: workOrderNumber,
+        mode: "insensitive",
+    }
+}
+
+if(fromDate || toDate) {
+    where.scheduledDate = {};
+
+    if(fromDate){
+        where.scheduledDate.gte = new Date(fromDate);
+    }
+
+    if(toDate) {
+        const endDate = new Date(toDate);
+        endDate.setHours(23, 59, 59, 999);
+
+        where.scheduledDate.lte = endDate;
+    }
+
 }
 
 const workOrders = await prisma.workOrder.findMany({
@@ -146,6 +174,7 @@ const updateWorkOrder = async (id, workOrderData) => {
         data: {
             title: workOrderData.title,
             description: workOrderData.description,
+            status: workOrderData.status,
             priority: workOrderData.priority,
             estimatedHours: workOrderData.estimatedHours,
             scheduledDate: new Date(workOrderData.scheduledDate),
