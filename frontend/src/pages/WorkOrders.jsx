@@ -15,14 +15,11 @@ import { getEngineers } from "../api/engineer.api";
 const WorkOrders = () => {
 
     const [workOrders, setWorkOrders] = useState([]);
-
     const [machines, setMachines] = useState([]);
-
     const [engineers, setEngineers] = useState([]);
-
     const [selectedWorkOrder, setSelectedWorkOrder] = useState(null);
-
     const [showForm, setShowForm] = useState(false);
+    const [search, setSearch] = useState("");
 
     const [filters, setFilters] = useState({
         status: "",
@@ -34,29 +31,21 @@ const WorkOrders = () => {
     useEffect(() => {
 
         fetchMachines();
-
         fetchEngineers();
 
     }, []);
 
     useEffect(() => {
-
         fetchWorkOrders();
-
-    }, [filters]);
-
+    }, [filters, search]);
+    
     const fetchMachines = async () => {
 
         try {
-
             const response = await getMachines();
-
             setMachines(response.data.data);
-
         } catch {
-
             toast.error("Unable to load machines");
-
         }
 
     };
@@ -64,15 +53,10 @@ const WorkOrders = () => {
     const fetchEngineers = async () => {
 
         try {
-
             const response = await getEngineers();
-
             setEngineers(response.data.data);
-
         } catch {
-
             toast.error("Unable to load engineers");
-
         }
 
     };
@@ -80,15 +64,13 @@ const WorkOrders = () => {
     const fetchWorkOrders = async () => {
 
         try {
-
-            const response = await getWorkOrders(filters);
-
+            const response = await getWorkOrders({
+                ...filters,
+                workOrderNumber: search,
+            });
             setWorkOrders(response.data.data);
-
         } catch {
-
             toast.error("Unable to load work orders");
-
         }
 
     };
@@ -98,29 +80,18 @@ const WorkOrders = () => {
         if (!window.confirm("Delete this work order?")) return;
 
         try {
-
             await deleteWorkOrder(id);
-
             toast.success("Deleted successfully");
-
             fetchWorkOrders();
-
         } catch (error) {
-
             toast.error(error.response?.data?.message || "Delete failed");
-
         }
-
     };
 
     const handleClose = () => {
-
         setShowForm(false);
-
         setSelectedWorkOrder(null);
-
         fetchWorkOrders();
-
     };
 
     const columns = [
@@ -195,6 +166,16 @@ const WorkOrders = () => {
                     Add Work Order
                 </button>
 
+            </div>
+
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search by Work Order Number"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full md:w-80 border rounded-lg p-2"
+                />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -284,7 +265,6 @@ const WorkOrders = () => {
                 columns={columns}
                 data={workOrders}
             />
-
             {showForm && (
                 <WorkOrderForm
                     workOrder={selectedWorkOrder}
